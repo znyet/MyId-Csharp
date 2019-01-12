@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Topshelf;
-
 using Helios.Channels;
 using Helios.Channels.Bootstrap;
 using Helios.Channels.Sockets;
@@ -54,7 +49,7 @@ namespace MyIdServer
             try
             {
                 serverChannel = serverBootstrap.BindAsync().Result;
-                Console.WriteLine("--> server start,listen in port:" + ConfigHelper.Port);
+                Console.WriteLine("--> server start,listen in port " + ConfigHelper.Port);
                 Console.WriteLine("--> Run Debug=" + ConfigHelper.Debug);
                 Console.WriteLine("--> if you want to debug edit Config.ini set Debug=True");
                 Console.WriteLine("--> in production environment Debug must be False");

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Funcular.IdGenerators.Base36;
+﻿using Funcular.IdGenerators.Base36;
 
 namespace MyIdServer
 {

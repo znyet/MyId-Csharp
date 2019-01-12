@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
 using Helios.Channels;
 using Helios.Buffers;
-using System.Threading;
 
 namespace MyIdServer
 {
@@ -16,7 +11,7 @@ namespace MyIdServer
 
         public override void ChannelActive(IChannelHandlerContext context)
         {
-            LogHelper.DebugGreen("one client connet: " + context.Channel.Id);
+            LogHelper.DebugGreen("one client connet " + context.Channel.Id);
         }
 
         public override void ChannelRead(IChannelHandlerContext context, object message)
@@ -36,12 +31,12 @@ namespace MyIdServer
                     if (pwd.Equals(ConfigHelper.Password))
                     {
                         login = true;
-                        LogHelper.DebugGreen("login success use password: " + pwd);
+                        LogHelper.DebugGreen("login success use password " + pwd);
                     }
                     else //password error
                     {
                         context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("-1")));
-                        LogHelper.DebugRed("login error use password: " + pwd);
+                        LogHelper.DebugRed("login error use password " + pwd);
                         return;
                     }
                 }
@@ -62,7 +57,7 @@ namespace MyIdServer
                     default: id = "-2"; break;
                 }
                 context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.Default.GetBytes(id)));
-                LogHelper.DebugGreen("send id: " + id);
+                LogHelper.DebugGreen("send id " + id);
             }
             catch (Exception ex)
             {
@@ -76,7 +71,7 @@ namespace MyIdServer
         {
             if (!isClose)
             {
-                LogHelper.DebugRed("one client close: " + context.Channel.Id);
+                LogHelper.DebugRed("one client close " + context.Channel.Id);
                 isClose = true;
             }
         }
