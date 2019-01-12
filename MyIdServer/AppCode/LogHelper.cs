@@ -14,10 +14,16 @@ namespace MyIdServer
         private static Logger info = LogManager.GetLogger("info");
         private static Logger error = LogManager.GetLogger("error");
 
-        public static void Debug(string msg, params object[] args)
+        public static void DebugGreen(string msg, params object[] args)
         {
             if (ConfigHelper.Debug)
                 debug.Debug(msg, args);
+        }
+
+        public static void DebugRed(string msg, params object[] args)
+        {
+            if (ConfigHelper.Debug)
+                debug.Error(msg, args);
         }
 
         public static void Info(string msg, params object[] args)

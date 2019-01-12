@@ -31,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Funcular.IdGenerators">
@@ -61,9 +62,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppCode\ConfigHelper.cs" />
+    <Compile Include="AppCode\EchoHandler.cs" />
+    <Compile Include="AppCode\Id\Base36Id.cs" />
     <Compile Include="AppCode\LogHelper.cs" />
     <Compile Include="AppCode\MyIdService.cs" />
-    <Compile Include="AppCode\ObjectId.cs" />
+    <Compile Include="AppCode\Id\ObjectId.cs" />
+    <Compile Include="AppCode\Id\SnowflakeId.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -72,7 +76,21 @@
     <None Include="Config.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Install\1-install service.cmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Install\4-uninstall service.cmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Install\2-start service.cmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Install\3-stop service.cmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

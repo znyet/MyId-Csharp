@@ -412,7 +412,7 @@ namespace MyIdServer
 
         private static string GetMachineName()
         {
-            return Environment.MachineName;
+            return ConfigHelper.MachineName;
         }
 
         private static short GetPid()
