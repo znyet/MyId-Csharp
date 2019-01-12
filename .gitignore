@@ -1,4 +1,4 @@
-*suo
+*.suo
 MyIdClient/bin
 MyIdClient/obj
 MyIdServer/bin
