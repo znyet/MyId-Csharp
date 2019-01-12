@@ -8,7 +8,7 @@ namespace MyIdClient
 {
     public class MyId
     {
-        public MyId(string ip, int port)
+        public MyId(string ip, int port, string password = null, int maxPool = 100, int msgTimeout = 2000, int socketGC = 1)
         {
 
         }

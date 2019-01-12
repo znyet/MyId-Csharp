@@ -23,7 +23,8 @@ namespace MyIdServer
                 if (string.IsNullOrEmpty(ConfigHelper.Password))
                 {
                     login = true;
-                    LogHelper.DebugGreen("login success password empty");
+                    LogHelper.DebugGreen("login success use password empty");
+                    context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("1")));
                 }
                 else
                 {
@@ -32,37 +33,31 @@ namespace MyIdServer
                     {
                         login = true;
                         LogHelper.DebugGreen("login success use password " + pwd);
+                        context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("1")));
                     }
                     else //password error
                     {
                         context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("-1")));
                         LogHelper.DebugRed("login error use password " + pwd);
-                        return;
                     }
                 }
+                return;
             }
 
-            try
+            int msg = BitConverter.ToInt32(buff, 0);
+            string id;
+            switch (msg)
             {
-                int msg = BitConverter.ToInt32(buff, 0);
-                string id;
-                switch (msg)
-                {
-                    case 0: id = Guid.NewGuid().ToString(); break;
-                    case 1: id = ObjectId.GenerateNewId().ToString(); break;
-                    case 2: id = SnowflakeId.idWorker.NextId().ToString(); break;
-                    case 3: id = Base36Id.Base16.NewId(); break;
-                    case 4: id = Base36Id.Base20.NewId(); break;
-                    case 5: id = Base36Id.Base25.NewId(); break;
-                    default: id = "-2"; break;
-                }
-                context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.Default.GetBytes(id)));
-                LogHelper.DebugGreen("send id " + id);
+                case 0: id = Guid.NewGuid().ToString(); break;
+                case 1: id = ObjectId.GenerateNewId().ToString(); break;
+                case 2: id = SnowflakeId.idWorker.NextId().ToString(); break;
+                case 3: id = Base36Id.Base16.NewId(); break;
+                case 4: id = Base36Id.Base20.NewId(); break;
+                case 5: id = Base36Id.Base25.NewId(); break;
+                default: id = "-2"; break;
             }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex.Message);
-            }
+            context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.Default.GetBytes(id)));
+            LogHelper.DebugGreen("send id " + id);
 
         }
 
