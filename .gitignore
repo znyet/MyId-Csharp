@@ -1,4 +1,5 @@
 *.suo
+*.user
 MyIdClient/bin
 MyIdClient/obj
 MyIdServer/bin
