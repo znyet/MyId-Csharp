@@ -1,7 +1,0 @@
-F:\GitHub\MyId-Csharp\MyIdClient\bin\Debug\MyIdClient.dll
-F:\GitHub\MyId-Csharp\MyIdClient\bin\Debug\MyIdClient.pdb
-F:\GitHub\MyId-Csharp\MyIdClient\obj\Debug\MyIdClient.csprojResolveAssemblyReference.cache
-F:\GitHub\MyId-Csharp\MyIdClient\obj\Debug\MyIdClient.dll
-F:\GitHub\MyId-Csharp\MyIdClient\obj\Debug\MyIdClient.pdb
-F:\GitHub\MyId-Csharp\MyIdClient\bin\Debug\CodeProject.ObjectPool.dll
-F:\GitHub\MyId-Csharp\MyIdClient\bin\Debug\Helios.dll
