@@ -1,0 +1,14 @@
+F:\GitHub\MyId-Csharp\MyIdServer\bin\Debug\MyIdServer.exe.config
+F:\GitHub\MyId-Csharp\MyIdServer\bin\Debug\MyIdServer.exe
+F:\GitHub\MyId-Csharp\MyIdServer\bin\Debug\MyIdServer.pdb
+F:\GitHub\MyId-Csharp\MyIdServer\bin\Debug\Helios.dll
+F:\GitHub\MyId-Csharp\MyIdServer\bin\Debug\NLog.dll
+F:\GitHub\MyId-Csharp\MyIdServer\bin\Debug\SharpConfig.dll
+F:\GitHub\MyId-Csharp\MyIdServer\bin\Debug\Topshelf.dll
+F:\GitHub\MyId-Csharp\MyIdServer\obj\Debug\MyIdServer.exe
+F:\GitHub\MyId-Csharp\MyIdServer\obj\Debug\MyIdServer.pdb
+F:\GitHub\MyId-Csharp\MyIdServer\bin\Debug\NLog.config
+F:\GitHub\MyId-Csharp\MyIdServer\bin\Debug\Config.ini
+F:\GitHub\MyId-Csharp\MyIdServer\bin\Debug\Funcular.IdGenerators.dll
+F:\GitHub\MyId-Csharp\MyIdServer\bin\Debug\Snowflake.dll
+F:\GitHub\MyId-Csharp\MyIdServer\obj\Debug\MyIdServer.csprojResolveAssemblyReference.cache
