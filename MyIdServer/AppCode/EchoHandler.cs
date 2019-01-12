@@ -44,9 +44,9 @@ namespace MyIdServer
                 return;
             }
 
-            int msg = BitConverter.ToInt32(buff, 0);
+            int idType = BitConverter.ToInt32(buff, 0);
             string id;
-            switch (msg)
+            switch (idType)
             {
                 case 0: id = Guid.NewGuid().ToString(); break;
                 case 1: id = ObjectId.GenerateNewId().ToString(); break;
