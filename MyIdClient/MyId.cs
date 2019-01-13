@@ -4,61 +4,68 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using CodeProject.ObjectPool;
+
 namespace MyIdClient
 {
     public class MyId
     {
-        public MyId(string ip, int port, string pwd = null, int maxPool = 100, int msgTimeout = 2000, int socketGC = 1)
-        {
 
+        internal TimedObjectPool<MyIdPooled> pool;
+
+        public MyId(string server, int port, string pwd = null, int maxPool = 100, int msgTimeout = 3000)
+        {
+            pool = new TimedObjectPool<MyIdPooled>(
+                maxPool,
+                () => new MyIdPooled(server, port, pwd, msgTimeout),
+                TimeSpan.FromMinutes(1));
         }
 
         public MyId(string connectionString)
         {
+            string msg = "connectionString example --> server=127.0.0.1;port=8123;pwd=123;maxPool=100;msgTimeout=3000";
+            if (string.IsNullOrEmpty(connectionString) || !connectionString.Contains("server"))
+                throw new Exception(msg);
+
 
         }
 
-        public string GetId(int idType)
+        public string GetId(int idType, int count = 1)
         {
-            using (var conn = MyIdManager.pool.GetObject())
+            using (var conn = pool.GetObject())
             {
-                return conn.GetId(idType);
+                return conn.GetId(idType, count);
             }
         }
 
-        public string GetGuid()
+        public string GetGuid(int count = 1)
         {
-            return GetId(0);
+            return GetId(0, count);
         }
 
-        public string GetObjectId()
+        public string GetObjectId(int count = 1)
         {
-            return GetId(1);
+            return GetId(1, count);
         }
 
-        public string GetSnowflakeId()
+        public string GetSnowflakeId(int count = 1)
         {
-            return GetId(2);
+            return GetId(2, count);
         }
 
-        public long GetSnowflakeAsLong()
+        public string GetBase16Id(int count = 1)
         {
-            return Convert.ToInt64(GetSnowflakeId());
+            return GetId(3, count);
         }
 
-        public string GetBase16Id()
+        public string GetBase20Id(int count = 1)
         {
-            return GetId(3);
+            return GetId(4, count);
         }
 
-        public string GetBase20Id()
+        public string GetBase25Id(int count = 1)
         {
-            return GetId(3);
-        }
-
-        public string GetBase25Id()
-        {
-            return GetId(3);
+            return GetId(5, count);
         }
 
     }

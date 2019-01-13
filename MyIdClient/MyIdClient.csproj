@@ -46,7 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MyId.cs" />
-    <Compile Include="MyIdManager.cs" />
     <Compile Include="MyIdPooled.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

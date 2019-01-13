@@ -7,13 +7,22 @@ namespace MyIdServer
 {
     public class EchoHandler : ChannelHandlerAdapter
     {
-        bool login = false;
 
+        //socket connect
         public override void ChannelActive(IChannelHandlerContext context)
         {
             LogHelper.DebugGreen("one client connet " + context.Channel.Id);
         }
 
+        //socket close
+        public override void ChannelInactive(IChannelHandlerContext context)
+        {
+            LogHelper.DebugRed("one client close ChannelInactive " + context.Channel.Id);
+        }
+
+        //socket message
+        bool login = false;
+        StringBuilder sb = new StringBuilder();
         public override void ChannelRead(IChannelHandlerContext context, object message)
         {
             IByteBuf ibuff = message as IByteBuf;
@@ -27,7 +36,7 @@ namespace MyIdServer
                 }
                 else
                 {
-                    string pwd = Encoding.UTF8.GetString(ibuff.Array);
+                    string pwd = Encoding.Default.GetString(ibuff.Array);
                     if (pwd.Equals(ConfigHelper.Password))
                     {
                         login = true;
@@ -42,30 +51,122 @@ namespace MyIdServer
                 }
                 return;
             }
-      
-            int idType = BitConverter.ToInt32(ibuff.Array,0);
-            string id;
-            switch (idType)
+
+            int idType = ibuff.GetByte(0); //请求类型
+            int count = ibuff.GetInt(1); //请求个数
+            string idString = null;
+            if (idType == 0)
             {
-                case 0: id = Guid.NewGuid().ToString(); break;
-                case 1: id = ObjectId.GenerateNewId().ToString(); break;
-                case 2: id = SnowflakeId.idWorker.NextId().ToString(); break;
-                case 3: id = Base36Id.Base16.NewId(); break;
-                case 4: id = Base36Id.Base20.NewId(); break;
-                case 5: id = Base36Id.Base25.NewId(); break;
-                default: id = "-2"; break;
+                if (count == 1)
+                    idString = Guid.NewGuid().ToString();
+                else
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        sb.Append(Guid.NewGuid().ToString());
+                        if (i != count - 1)
+                            sb.Append(",");
+                    }
+                    idString = sb.ToString();
+                    sb.Clear();
+                }
             }
-            context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.Default.GetBytes(id)));
-            LogHelper.DebugGreen("send id " + id);
+            else if (idType == 1)
+            {
+                if (count == 1)
+                    ObjectId.GenerateNewId().ToString();
+                else
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        sb.Append(ObjectId.GenerateNewId().ToString());
+                        if (i != count - 1)
+                            sb.Append(",");
+                    }
+                    idString = sb.ToString();
+                    sb.Clear();
+                }
+            }
+            else if (idType == 2)
+            {
+                if (count == 1)
+                    idString = SnowflakeId.idWorker.NextId().ToString();
+                else
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        sb.Append(SnowflakeId.idWorker.NextId().ToString());
+                        if (i != count - 1)
+                            sb.Append(",");
+                    }
+                    idString = sb.ToString();
+                    sb.Clear();
+                }
+            }
+            else if (idType == 3)
+            {
+                if (count == 1)
+                    idString = Base36Id.Base16.NewId();
+                else
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        sb.Append(Base36Id.Base16.NewId());
+                        if (i != count - 1)
+                            sb.Append(",");
+                    }
+                    idString = sb.ToString();
+                    sb.Clear();
+                }
+            }
+            else if (idType == 4)
+            {
+                if (count == 1)
+                    idString = Base36Id.Base20.NewId();
+                else
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        sb.Append(Base36Id.Base20.NewId());
+                        if (i != count - 1)
+                            sb.Append(",");
+                    }
+                    idString = sb.ToString();
+                    sb.Clear();
+                }
+            }
+            else if (idType == 5)
+            {
+                if (count == 1)
+                    idString = Base36Id.Base25.NewId();
+                else
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        sb.Append(Base36Id.Base25.NewId());
+                        if (i != count - 1)
+                            sb.Append(",");
+                    }
+                    idString = sb.ToString();
+                    sb.Clear();
+                }
+            }
+            else
+            {
+                idString = "0";
+            }
+            context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.Default.GetBytes(idString)));
+            LogHelper.DebugGreen("send id " + idString);
 
         }
 
+        //socket exception
         bool isClose = false;
         public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
         {
             if (!isClose)
             {
-                LogHelper.DebugRed("one client close " + context.Channel.Id);
+                LogHelper.DebugRed("ExceptionCaught " + context.Channel.Id + " " + exception.Message);
                 isClose = true;
             }
         }
