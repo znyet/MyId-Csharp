@@ -17,34 +17,33 @@ namespace MyIdServer
         public override void ChannelRead(IChannelHandlerContext context, object message)
         {
             IByteBuf ibuff = message as IByteBuf;
-            byte[] buff = ibuff.ToArray();
             if (!login)
             {
                 if (string.IsNullOrEmpty(ConfigHelper.Password))
                 {
                     login = true;
                     LogHelper.DebugGreen("login success use password empty");
-                    context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("1")));
+                    context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.Default.GetBytes("1")));
                 }
                 else
                 {
-                    string pwd = Encoding.UTF8.GetString(buff);
+                    string pwd = Encoding.UTF8.GetString(ibuff.Array);
                     if (pwd.Equals(ConfigHelper.Password))
                     {
                         login = true;
                         LogHelper.DebugGreen("login success use password " + pwd);
-                        context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("1")));
+                        context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.Default.GetBytes("1")));
                     }
                     else //password error
                     {
-                        context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.UTF8.GetBytes("-1")));
+                        context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.Default.GetBytes("-1")));
                         LogHelper.DebugRed("login error use password " + pwd);
                     }
                 }
                 return;
             }
-
-            int idType = BitConverter.ToInt32(buff, 0);
+      
+            int idType = BitConverter.ToInt32(ibuff.Array,0);
             string id;
             switch (idType)
             {
