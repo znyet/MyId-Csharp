@@ -31,7 +31,7 @@ namespace MyIdServer
                 if (string.IsNullOrEmpty(ConfigHelper.Password))
                 {
                     login = true;
-                    LogHelper.DebugGreen("login success use password empty");
+                    LogHelper.DebugGreen("login success server password empty");
                     context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.Default.GetBytes("1")));
                 }
                 else
@@ -40,13 +40,13 @@ namespace MyIdServer
                     if (pwd.Equals(ConfigHelper.Password))
                     {
                         login = true;
-                        LogHelper.DebugGreen("login success use password " + pwd);
+                        LogHelper.DebugGreen("login success client password " + pwd);
                         context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.Default.GetBytes("1")));
                     }
                     else //password error
                     {
                         context.WriteAndFlushAsync(Unpooled.WrappedBuffer(Encoding.Default.GetBytes("-1")));
-                        LogHelper.DebugRed("login error use password " + pwd);
+                        LogHelper.DebugRed("login error client password " + pwd + " <> server password " + ConfigHelper.Password);
                     }
                 }
                 return;

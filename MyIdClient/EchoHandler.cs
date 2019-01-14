@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
 using Helios.Channels;
 using Helios.Buffers;
 using System.Threading;
@@ -13,16 +9,29 @@ namespace MyIdClient
     public class EchoHandler : ChannelHandlerAdapter
     {
         public IChannel channel;
-        public string pwd;
-        public int msgTimeout; //消息超时时间
         public StringBuilder sb = new StringBuilder();
         public AutoResetEvent slim = new AutoResetEvent(false);
+        public int lifetime;
+        Timer timer = null;
+        DateTime lastTime = DateTime.Now;
         //激活连接事件
         public override void ChannelActive(IChannelHandlerContext context)
         {
-            //channel = context.Channel;
-            //byte[] data = Encoding.Default.GetBytes(pwd);
-            //channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(data)); // send login
+            if (lifetime != 0)
+            {
+                timer = new Timer(delegate
+                {
+                    TimeSpan ts = DateTime.Now - lastTime;
+                    if (ts > TimeSpan.FromSeconds(lifetime))
+                    {
+                        if (channel != null)
+                        {
+                            channel.CloseAsync();
+                        }
+                    }
+
+                }, null, lifetime * 1000, 2000);
+            }
         }
 
         //读取数据事件
@@ -36,6 +45,7 @@ namespace MyIdClient
         //数据读取完毕事件
         public override void ChannelReadComplete(IChannelHandlerContext context)
         {
+            lastTime = DateTime.Now;
             slim.Set();
         }
 
@@ -50,6 +60,8 @@ namespace MyIdClient
         {
             channel = null;
             slim.Reset();
+            if (timer != null)
+                timer.Dispose();
         }
 
     }

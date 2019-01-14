@@ -19,24 +19,22 @@ namespace MyIdClient
         EchoHandler echoHandler;
         IEventLoopGroup clientGroup = new MultithreadEventLoopGroup(1);
         ClientBootstrap clientBootstrap;
-        public MyIdPooled(string server, int port, string pwd, int msgTimeout)
+        public MyIdPooled(string server, int port, string pwd, int timeout, int lifetime)
         {
             this.server = server;
             this.port = port;
-            this.msgTimeout = msgTimeout;
+            this.msgTimeout = timeout;
             if (string.IsNullOrEmpty(pwd))
                 pwd = "1";
             this.pwd = pwd;
             echoHandler = new EchoHandler();
+            echoHandler.lifetime = lifetime;
         }
 
         #region Method
 
         private void InitSocket()
         {
-            echoHandler.pwd = pwd;
-            echoHandler.msgTimeout = 500;
-
             new Thread(() => //new thread to run socket
             {
                 clientBootstrap = new ClientBootstrap()
@@ -59,22 +57,23 @@ namespace MyIdClient
 
             }) { IsBackground = true }.Start();
 
-            echoHandler.slim.WaitOne(1000);
+            echoHandler.slim.WaitOne(msgTimeout);
             if (echoHandler.channel == null)
             {
-                throw new Exception("MyIdServer Socket error");
+                throw new Exception("MyIdServer --> can not connect to " + server + ":" + port);
             }
             else //send login
             {
                 echoHandler.sb.Clear();
                 byte[] byteArry = Encoding.Default.GetBytes(pwd);
                 echoHandler.channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(byteArry));
-                echoHandler.slim.WaitOne(1000);
+                echoHandler.slim.WaitOne(msgTimeout);
                 if (echoHandler.sb.ToString() == "-1")
                 {
                     echoHandler.channel.CloseAsync();
                     echoHandler.channel = null;
-                    throw new Exception("MyIdServer password error");
+                    echoHandler.slim.Reset();
+                    throw new Exception("MyIdServer --> password error");
                 }
             }
         }
@@ -89,7 +88,7 @@ namespace MyIdClient
             echoHandler.sb.Clear();
             IByteBuf buf = Unpooled.Buffer().WriteByte(idType).WriteInt(count);
             echoHandler.channel.WriteAndFlushAsync(buf);
-            echoHandler.slim.WaitOne(1000);
+            echoHandler.slim.WaitOne(msgTimeout);
             return echoHandler.sb.ToString();
         }
 
