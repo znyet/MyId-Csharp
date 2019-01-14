@@ -11,24 +11,19 @@ namespace MyIdClient
     public class MyId
     {
 
-        internal TimedObjectPool<MyIdPooled> pool;
+        internal ObjectPool<MyIdPooled> pool;
 
         public MyId(string server, int port, string pwd = null, int maxPool = 100, int msgTimeout = 3000)
         {
-            pool = new TimedObjectPool<MyIdPooled>(
-                maxPool,
-                () => new MyIdPooled(server, port, pwd, msgTimeout),
-                TimeSpan.FromMinutes(1));
+            pool = new ObjectPool<MyIdPooled>(maxPool, () => new MyIdPooled(server, port, pwd, msgTimeout));
         }
 
-        public MyId(string connectionString)
-        {
-            string msg = "connectionString example --> server=127.0.0.1;port=8123;pwd=123;maxPool=100;msgTimeout=3000";
-            if (string.IsNullOrEmpty(connectionString) || !connectionString.Contains("server"))
-                throw new Exception(msg);
-
-
-        }
+        //public MyId(string connectionString)
+        //{
+        //    string msg = "connectionString example --> server=127.0.0.1;port=8123;pwd=123;maxPool=100;msgTimeout=3000";
+        //    if (string.IsNullOrEmpty(connectionString) || !connectionString.Contains("server"))
+        //        throw new Exception(msg);
+        //}
 
         public string GetId(int idType, int count = 1)
         {

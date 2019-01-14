@@ -74,7 +74,7 @@ namespace MyIdServer
             else if (idType == 1)
             {
                 if (count == 1)
-                    ObjectId.GenerateNewId().ToString();
+                    idString = ObjectId.GenerateNewId().ToString();
                 else
                 {
                     for (int i = 0; i < count; i++)

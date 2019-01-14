@@ -1,12 +1,10 @@
 ﻿using CodeProject.ObjectPool;
-using Helios.Net;
-using Helios.Net.Bootstrap;
-using Helios.Serialization;
-using Helios.Topology;
+using Helios.Buffers;
+using Helios.Channels;
+using Helios.Channels.Bootstrap;
+using Helios.Channels.Sockets;
 using System;
 using System.Net;
-using System.Text;
-using System.Linq;
 
 namespace MyIdClient
 {
@@ -16,82 +14,61 @@ namespace MyIdClient
         int port;
         string pwd;
         int msgTimeout;
-        INode serverNode;
-        IConnectionFactory connectionFactory;
-        IConnection Client;
-        StringBuilder sb = new StringBuilder();
+        EchoHandler echoHandler;
+        IEventLoopGroup clientGroup = new MultithreadEventLoopGroup(1);
+        ClientBootstrap clientBootstrap;
         public MyIdPooled(string server, int port, string pwd, int msgTimeout)
         {
-            if (string.IsNullOrEmpty(pwd))
-                pwd = "1";
-
             this.server = server;
             this.port = port;
-            this.pwd = pwd;
             this.msgTimeout = msgTimeout;
-            serverNode = NodeBuilder.BuildNode().Host(IPAddress.Parse(server)).WithPort(port);
-
-            connectionFactory = new ClientBootstrap()
-                .SetEncoder(new NoOpEncoder())
-                .SetDecoder(new NoOpDecoder())
-                .SetTransport(TransportType.Tcp).Build();
-
-            InitSocket();
+            if (string.IsNullOrEmpty(pwd))
+                pwd = "1";
+            this.pwd = pwd;
+            echoHandler = new EchoHandler();
         }
 
-
-        #region MyRegion
+        #region Method
 
         private void InitSocket()
         {
-            if (Client == null || !Client.IsOpen())
+            echoHandler.pwd = pwd;
+            echoHandler.msgTimeout = 500;
+
+            clientBootstrap = new ClientBootstrap()
+                 .Group(clientGroup)
+                 .Option(ChannelOption.TcpNodelay, true)
+                 .Channel<TcpSocketChannel>()
+                 .RemoteAddress(IPAddress.Parse(server), port)
+                 .Handler(new ActionChannelInitializer<TcpSocketChannel>(channel =>
+                 {
+                     IChannelPipeline pip = channel.Pipeline;
+                     pip.AddLast(echoHandler);
+                 }));
+            clientBootstrap.ConnectAsync().ContinueWith(task => 
             {
+                echoHandler.slim.Set();
+            });
 
-                Client = connectionFactory.NewConnection(serverNode);
-               
-                Client.OnConnection += (remoteAddress, responseChannel) =>
-                {
-                    Client.BeginReceive();
-                    byte[] data = Encoding.Default.GetBytes(pwd); //send login
-                    Client.Send(data, 0, data.Length, serverNode);
-                };
-
-                Client.Receive += (incomingData, responseChannel) =>
-                {
-                    byte[] data = incomingData.Buffer;
-                    string msg = Encoding.UTF8.GetString(data);
-                    sb.Append(msg);
-                };
-
-                Client.OnDisconnection += (reason, closedChannel) =>
-                {     
-                    Client.Dispose();
-                    throw new Exception(reason.Message);
-                };
-
-                Client.Open();
-
-            }
-
+            echoHandler.slim.WaitOne(5000);
 
         }
 
         #endregion
 
-
-
         public string GetId(int idType, int count = 1)
         {
-            InitSocket();
-            byte[] b1 = BitConverter.GetBytes(idType); //send login
-            byte[] b2 = BitConverter.GetBytes(count);
+            if (echoHandler.channel == null)
+                InitSocket();
 
-            byte[] by = b1.Concat(b2).ToArray(); ;
-            
-            Client.Send(by, 0, by.Length, serverNode);
-            
-            return sb.ToString();
-
+            IByteBuf buf = Unpooled.Buffer().WriteByte(idType).WriteInt(count);
+            string data = echoHandler.SendMessage(buf);
+            //switch (data)
+            //{
+            //    case "1": throw new Exception("MyIdServer login time out");
+            //    case "2": throw new Exception("MyIdServer socket error");
+            //}
+            return data;
         }
 
 

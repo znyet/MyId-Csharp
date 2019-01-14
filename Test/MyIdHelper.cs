@@ -14,7 +14,7 @@ namespace Test
 
         public static MyId myId
         {
-            get 
+            get
             {
                 if (_myId == null)
                 {

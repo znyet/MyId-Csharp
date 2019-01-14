@@ -14,7 +14,7 @@ namespace Test
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            Response.Write(MyIdHelper.myId.GetGuid());
+            Response.Write(MyIdHelper.myId.GetObjectId());
         }
     }
 }
