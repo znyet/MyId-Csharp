@@ -36,7 +36,7 @@ namespace MyIdServer
                 }
                 else
                 {
-                    string pwd = Encoding.Default.GetString(ibuff.Array);
+                    string pwd = Encoding.Default.GetString(ibuff.ToArray());
                     if (pwd.Equals(ConfigHelper.Password))
                     {
                         login = true;
