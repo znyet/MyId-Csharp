@@ -13,14 +13,14 @@ namespace MyIdClient
 
         internal ObjectPool<MyIdPooled> pool;
 
-        public MyId(string server, int port, string pwd = null, int maxPool = 100, int msgTimeout = 3000)
+        public MyId(string server, int port, string pwd = null, int maxPool = 100, int timeout = 1000, int lifetime = 0)
         {
-            pool = new ObjectPool<MyIdPooled>(maxPool, () => new MyIdPooled(server, port, pwd, msgTimeout));
+            pool = new ObjectPool<MyIdPooled>(maxPool, () => new MyIdPooled(server, port, pwd, timeout, lifetime));
         }
 
         //public MyId(string connectionString)
         //{
-        //    string msg = "connectionString example --> server=127.0.0.1;port=8123;pwd=123;maxPool=100;msgTimeout=3000";
+        //    string msg = "connectionString example --> server=127.0.0.1;port=8123;pwd=123456;maxPool=100;timeout=1000;lifetime=300";
         //    if (string.IsNullOrEmpty(connectionString) || !connectionString.Contains("server"))
         //        throw new Exception(msg);
         //}

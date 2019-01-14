@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
 using Helios.Channels;
 using Helios.Buffers;
 using System.Threading;
@@ -13,42 +9,43 @@ namespace MyIdClient
     public class EchoHandler : ChannelHandlerAdapter
     {
         public IChannel channel;
-        public string pwd;
-        public int msgTimeout; //消息超时时间
-
-        public int status = 0;
-
         public StringBuilder sb = new StringBuilder();
         public AutoResetEvent slim = new AutoResetEvent(false);
-
+        public int lifetime;
+        Timer timer = null;
+        DateTime lastTime = DateTime.Now;
         //激活连接事件
         public override void ChannelActive(IChannelHandlerContext context)
         {
-            channel = context.Channel;
-            byte[] data = Encoding.Default.GetBytes(pwd);
-            channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(data)); // send login
+            if (lifetime != 0)
+            {
+                timer = new Timer(delegate
+                {
+                    TimeSpan ts = DateTime.Now - lastTime;
+                    if (ts > TimeSpan.FromSeconds(lifetime))
+                    {
+                        if (channel != null)
+                        {
+                            channel.CloseAsync();
+                        }
+                    }
+
+                }, null, lifetime * 1000, 2000);
+            }
         }
 
         //读取数据事件
         public override void ChannelRead(IChannelHandlerContext context, object message)
         {
             IByteBuf ibuff = message as IByteBuf;
-            string data = Encoding.UTF8.GetString(ibuff.ToArray());
+            string data = Encoding.Default.GetString(ibuff.ToArray());
             sb.Append(data);
         }
 
         //数据读取完毕事件
         public override void ChannelReadComplete(IChannelHandlerContext context)
         {
-            string data = sb.ToString();       
-            if (data.Equals("1"))
-                status = 1;
-            else if (data.Equals("-1"))
-            {
-                status = -1;
-                channel.CloseAsync();
-                channel = null;
-            }
+            lastTime = DateTime.Now;
             slim.Set();
         }
 
@@ -62,21 +59,10 @@ namespace MyIdClient
         public override void ChannelInactive(IChannelHandlerContext context)
         {
             channel = null;
-            //slim.Reset();
+            slim.Reset();
+            if (timer != null)
+                timer.Dispose();
         }
-
-        //发送消息
-        public string SendMessage(IByteBuf ibuf)
-        {
-            channel.WriteAndFlushAsync(ibuf);
-            //slim.WaitOne(msgTimeout);
-            string data = sb.ToString();
-            sb.Clear();
-            if (string.IsNullOrEmpty(data))
-                return "2";
-            return data;
-        }
-
 
     }
 }

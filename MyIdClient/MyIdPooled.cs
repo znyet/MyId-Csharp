@@ -5,6 +5,8 @@ using Helios.Channels.Bootstrap;
 using Helios.Channels.Sockets;
 using System;
 using System.Net;
+using System.Text;
+using System.Threading;
 
 namespace MyIdClient
 {
@@ -17,25 +19,25 @@ namespace MyIdClient
         EchoHandler echoHandler;
         IEventLoopGroup clientGroup = new MultithreadEventLoopGroup(1);
         ClientBootstrap clientBootstrap;
-        public MyIdPooled(string server, int port, string pwd, int msgTimeout)
+        public MyIdPooled(string server, int port, string pwd, int timeout, int lifetime)
         {
             this.server = server;
             this.port = port;
-            this.msgTimeout = msgTimeout;
+            this.msgTimeout = timeout;
             if (string.IsNullOrEmpty(pwd))
                 pwd = "1";
             this.pwd = pwd;
             echoHandler = new EchoHandler();
+            echoHandler.lifetime = lifetime;
         }
 
         #region Method
 
         private void InitSocket()
         {
-            echoHandler.pwd = pwd;
-            echoHandler.msgTimeout = 500;
-
-            clientBootstrap = new ClientBootstrap()
+            new Thread(() => //new thread to run socket
+            {
+                clientBootstrap = new ClientBootstrap()
                  .Group(clientGroup)
                  .Option(ChannelOption.TcpNodelay, true)
                  .Channel<TcpSocketChannel>()
@@ -45,13 +47,35 @@ namespace MyIdClient
                      IChannelPipeline pip = channel.Pipeline;
                      pip.AddLast(echoHandler);
                  }));
-            clientBootstrap.ConnectAsync().ContinueWith(task => 
+
+                clientBootstrap.ConnectAsync().ContinueWith(task =>
+                {
+                    //if connect success
+                    echoHandler.channel = task.Result;
+                    echoHandler.slim.Set();
+                });
+
+            }) { IsBackground = true }.Start();
+
+            echoHandler.slim.WaitOne(msgTimeout);
+            if (echoHandler.channel == null)
             {
-                echoHandler.slim.Set();
-            });
-
-            echoHandler.slim.WaitOne(5000);
-
+                throw new Exception("MyIdServer --> can not connect to " + server + ":" + port);
+            }
+            else //send login
+            {
+                echoHandler.sb.Clear();
+                byte[] byteArry = Encoding.Default.GetBytes(pwd);
+                echoHandler.channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(byteArry));
+                echoHandler.slim.WaitOne(msgTimeout);
+                if (echoHandler.sb.ToString() == "-1")
+                {
+                    echoHandler.channel.CloseAsync();
+                    echoHandler.channel = null;
+                    echoHandler.slim.Reset();
+                    throw new Exception("MyIdServer --> password error");
+                }
+            }
         }
 
         #endregion
@@ -61,14 +85,11 @@ namespace MyIdClient
             if (echoHandler.channel == null)
                 InitSocket();
 
+            echoHandler.sb.Clear();
             IByteBuf buf = Unpooled.Buffer().WriteByte(idType).WriteInt(count);
-            string data = echoHandler.SendMessage(buf);
-            //switch (data)
-            //{
-            //    case "1": throw new Exception("MyIdServer login time out");
-            //    case "2": throw new Exception("MyIdServer socket error");
-            //}
-            return data;
+            echoHandler.channel.WriteAndFlushAsync(buf);
+            echoHandler.slim.WaitOne(msgTimeout);
+            return echoHandler.sb.ToString();
         }
 
 
