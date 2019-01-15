@@ -74,6 +74,7 @@ namespace MyIdClient
                     echoHandler.channel.CloseAsync();
                     echoHandler.channel = null;
                     echoHandler.slim.Reset();
+                    echoHandler.sb.Clear();
                     throw new Exception("MyIdServer --> password error");
                 }
             }
@@ -90,7 +91,9 @@ namespace MyIdClient
             IByteBuf buf = Unpooled.Buffer().WriteByte(idType).WriteInt(count);
             echoHandler.channel.WriteAndFlushAsync(buf);
             echoHandler.slim.WaitOne(msgTimeout);
-            return echoHandler.sb.ToString();
+            string data = echoHandler.sb.ToString();
+            echoHandler.sb.Clear();
+            return data;
         }
 
 
