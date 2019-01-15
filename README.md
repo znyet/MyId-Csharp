@@ -96,7 +96,6 @@ Debug=False
 
 ##################################################
 #Ip Default IPAddress.Any
-#MachineName Default Environment.MachineName
 #GCTime minutes
 ```
 Run server as windows service<br>
