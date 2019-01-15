@@ -63,5 +63,30 @@ string id = MyIdHelper.myId.GetBase20Id();  //Base36 -> 20
 //0F8JP8XBWJMDGASC3821
 
 string id = MyIdHelper.myId.GetBase25Id();  //Base36 -> 25
-//F8JP8XBW03DGNCJ
+00F8JP8XBWZKDGASAPY4LXXIA
 ```
+
+## MyIdServer
+Click MyIdServer.exe to run server<br>
+
+The Config.ini file to config server<br>
+```c#
+[server]
+Ip=
+Port=8123
+Password=
+
+[snowflake]
+WorkerId=0
+DatacenterId=0
+
+[other]
+GCTime=30
+Debug=False
+
+##################################################
+#Ip Default IPAddress.Any
+#MachineName Default Environment.MachineName
+#GCTime minutes
+```
+
