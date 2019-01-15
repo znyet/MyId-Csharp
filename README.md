@@ -63,7 +63,7 @@ string id = MyIdHelper.myId.GetBase20Id();  //Base36 -> 20
 //0F8JP8XBWJMDGASC3821
 
 string id = MyIdHelper.myId.GetBase25Id();  //Base36 -> 25
-00F8JP8XBWZKDGASAPY4LXXIA
+//00F8JP8XBWZKDGASAPY4LXXIA
 ```
 
 ConnectionString
