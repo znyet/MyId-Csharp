@@ -1,5 +1,5 @@
 # MyId-Csharp
-
+## Download from https://github.com/znyet/MyId-Csharp/releases
 ## MyIdClient
 ```c#
 using MyIdClient;
