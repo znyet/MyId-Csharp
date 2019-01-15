@@ -20,8 +20,11 @@ namespace Test
                 {
                     lock (_lock)
                     {
+                        //if (_myId == null)
+                        //    _myId = new MyId("127.0.0.1", 8123);
+
                         if (_myId == null)
-                            _myId = new MyId("127.0.0.1", 8123);
+                            _myId = new MyId("server=127.0.0.1;port=8123;pwd=123456;maxPool=100;timeout=1000;lifetime=0");
                     }
                 }
                 return _myId;

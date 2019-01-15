@@ -10,13 +10,15 @@ namespace Test
 
     public partial class index : System.Web.UI.Page
     {
-
-
         protected void Page_Load(object sender, EventArgs e)
         {
             Response.Write(MyIdHelper.myId.GetGuid());
             Response.Write("<br/>");
             Response.Write(MyIdHelper.myId.GetGuid(2));
+            Response.Write("<br/>");
+            Response.Write(MyIdHelper.myId.GetGuidToN());
+            Response.Write("<br/>");
+            Response.Write(MyIdHelper.myId.GetGuidToN(2));
             Response.Write("<br/>");
             Response.Write(MyIdHelper.myId.GetObjectId());
             Response.Write("<br/>");

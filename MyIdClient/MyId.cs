@@ -18,12 +18,36 @@ namespace MyIdClient
             pool = new ObjectPool<MyIdPooled>(maxPool, () => new MyIdPooled(server, port, pwd, timeout, lifetime));
         }
 
-        //public MyId(string connectionString)
-        //{
-        //    string msg = "connectionString example --> server=127.0.0.1;port=8123;pwd=123456;maxPool=100;timeout=1000;lifetime=300";
-        //    if (string.IsNullOrEmpty(connectionString) || !connectionString.Contains("server"))
-        //        throw new Exception(msg);
-        //}
+        public MyId(string connectionString)
+        {
+            string msg = "connectionString example --> server=127.0.0.1;port=8123;pwd=123456;maxPool=100;timeout=1000;lifetime=0";
+            if (string.IsNullOrEmpty(connectionString) || !connectionString.Contains("server"))
+                throw new Exception(msg);
+
+            string server = null;
+            int port = 8123;
+            string pwd = null;
+            int maxPool = 100;
+            int timeout = 1000;
+            int lifetime = 0;
+            string[] arry = connectionString.Split(';');
+            foreach (var item in arry)
+            {
+                string[] arry2 = item.Split('=');
+                string key = arry2[0].ToLower().Trim();
+                switch (key)
+                {
+                    case "server": server = arry2[1]; break;
+                    case "pwd": pwd = arry2[1]; break;
+                    case "port": port = Convert.ToInt32(arry2[1]); break;
+                    case "maxpool": maxPool = Convert.ToInt32(arry2[1]); break;
+                    case "timeout": timeout = Convert.ToInt32(arry2[1]); break;
+                    case "lifetime": lifetime = Convert.ToInt32(arry2[1]); break;
+                }
+            }
+
+            pool = new ObjectPool<MyIdPooled>(maxPool, () => new MyIdPooled(server, port, pwd, timeout, lifetime));
+        }
 
         public string GetId(int idType, int count = 1)
         {
@@ -61,6 +85,11 @@ namespace MyIdClient
         public string GetBase25Id(int count = 1)
         {
             return GetId(5, count);
+        }
+
+        public string GetGuidToN(int count = 1)
+        {
+            return GetId(6, count);
         }
 
     }

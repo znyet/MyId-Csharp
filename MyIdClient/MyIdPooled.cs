@@ -16,7 +16,7 @@ namespace MyIdClient
         int port;
         string pwd;
         int msgTimeout;
-        EchoHandler echoHandler;
+        EchoHandler echoHandler = new EchoHandler();
         IEventLoopGroup clientGroup = new MultithreadEventLoopGroup(1);
         ClientBootstrap clientBootstrap;
         public MyIdPooled(string server, int port, string pwd, int timeout, int lifetime)
@@ -27,27 +27,28 @@ namespace MyIdClient
             if (string.IsNullOrEmpty(pwd))
                 pwd = "1";
             this.pwd = pwd;
-            echoHandler = new EchoHandler();
             echoHandler.lifetime = lifetime;
+
+            clientBootstrap = new ClientBootstrap()
+                .Group(clientGroup)
+                .Option(ChannelOption.TcpNodelay, true)
+                .Channel<TcpSocketChannel>()
+                .RemoteAddress(IPAddress.Parse(server), port)
+                .Handler(new ActionChannelInitializer<TcpSocketChannel>(channel =>
+                {
+                    IChannelPipeline pip = channel.Pipeline;
+                    pip.AddLast(echoHandler);
+                }));
+
         }
 
         #region Method
 
         private void InitSocket()
         {
+
             new Thread(() => //new thread to run socket
             {
-                clientBootstrap = new ClientBootstrap()
-                 .Group(clientGroup)
-                 .Option(ChannelOption.TcpNodelay, true)
-                 .Channel<TcpSocketChannel>()
-                 .RemoteAddress(IPAddress.Parse(server), port)
-                 .Handler(new ActionChannelInitializer<TcpSocketChannel>(channel =>
-                 {
-                     IChannelPipeline pip = channel.Pipeline;
-                     pip.AddLast(echoHandler);
-                 }));
-
                 clientBootstrap.ConnectAsync().ContinueWith(task =>
                 {
                     //if connect success

@@ -151,6 +151,22 @@ namespace MyIdServer
                     sb.Clear();
                 }
             }
+            else if (idType == 6)
+            {
+                if (count == 1)
+                    idString = Guid.NewGuid().ToString("N");
+                else
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        sb.Append(Guid.NewGuid().ToString("N"));
+                        if (i != count - 1)
+                            sb.Append(",");
+                    }
+                    idString = sb.ToString();
+                    sb.Clear();
+                }
+            }
             else
             {
                 idString = "0";

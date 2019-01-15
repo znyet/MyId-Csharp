@@ -11,8 +11,6 @@ namespace MyIdServer
         public static int Port;
         public static string Password;
 
-        public static string MachineName;
-
         public static int WorkerId;
         public static int DatacenterId;
 
@@ -34,11 +32,6 @@ namespace MyIdServer
             Port = section1["Port"].IntValue;
             Password = section1["Password"].StringValue;
 
-            //objectid
-            var section2 = config["objectid"];
-            MachineName = section2["MachineName"].StringValue;
-            if (string.IsNullOrEmpty(MachineName))
-                MachineName = Environment.MachineName;
 
             //snowflake
             var section3 = config["snowflake"];
