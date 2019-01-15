@@ -35,19 +35,19 @@ public class MyIdHelper
 Now you can get id from the server.
 
 ```c#
-string id = MyIdHelper.myId.GetGuid();
+string id = MyIdHelper.myId.GetGuid(); //guid
 //da96b455-91e1-4bab-8638-18f8eb1955ee
 
 string id = MyIdHelper.myId.GetGuid(2); //return 2 id split with ,
 //f706296d-be31-4908-a6bd-4ce3abebf548,40353568-d4a3-4e9c-b3bb-6045612f7f55
 
-string id = MyIdHelper.myId.GetGuidToN();
+string id = MyIdHelper.myId.GetGuidToN(); //guid.Tostring("N")
 //7e113ffa71e649448814140f32d8cdb7
 
 string id = MyIdHelper.myId.GetGuidToN(2); //return 2 id split with ,
 //5593e0a617d94b8792976e5eb39a4b53,0b1a41765a6b4f6fbfe51db8e70f57e2
 
-string id = MyIdHelper.myId.GetObjectId();
+string id = MyIdHelper.myId.GetObjectId(); //Mongodb ObjectId
 //5c3d292b922fdb092429ec2c
 
 string id = MyIdHelper.myId.GetObjectId(2); //return 2 id split with ,
