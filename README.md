@@ -89,4 +89,10 @@ Debug=False
 #MachineName Default Environment.MachineName
 #GCTime minutes
 ```
+Run server as windows service<br>
+MyIdServer.exe install -servicename MyIdServer <br>
+net start MyIdServer <br>
+net stop MyIdServer <br>
+sc delete MyIdServer<br>
+
 
