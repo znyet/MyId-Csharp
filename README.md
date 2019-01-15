@@ -66,6 +66,16 @@ string id = MyIdHelper.myId.GetBase25Id();  //Base36 -> 25
 00F8JP8XBWZKDGASAPY4LXXIA
 ```
 
+ConnectionString
+```c#
+server=127.0.0.1; //server ip
+port=8123;  //server port
+pwd=123456; //if server has password
+maxPool=100; //client maxpool like sqlserver maxPoolSize
+timeout=1000; //connection timeout  (Milliseconds)
+lifetime=0; //socket lifetime default 0 alway life  (Seconds)
+```
+
 ## MyIdServer
 Click MyIdServer.exe to run server<br>
 
