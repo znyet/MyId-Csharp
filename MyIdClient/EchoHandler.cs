@@ -46,14 +46,15 @@ namespace MyIdClient
         public override void ChannelReadComplete(IChannelHandlerContext context)
         {
             lastTime = DateTime.Now;
+            context.Flush();
             slim.Set();
         }
 
-        //异常事件
-        public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
-        {
+        ////异常事件
+        //public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
+        //{
 
-        }
+        //}
 
         //关闭连接
         public override void ChannelInactive(IChannelHandlerContext context)

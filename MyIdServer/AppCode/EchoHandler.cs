@@ -14,12 +14,6 @@ namespace MyIdServer
             LogHelper.DebugGreen("one client connet " + context.Channel.Id);
         }
 
-        //socket close
-        public override void ChannelInactive(IChannelHandlerContext context)
-        {
-            LogHelper.DebugRed("one client close ChannelInactive " + context.Channel.Id);
-        }
-
         //socket message
         bool login = false;
         StringBuilder sb = new StringBuilder();
@@ -185,6 +179,13 @@ namespace MyIdServer
                 LogHelper.DebugRed("ExceptionCaught " + context.Channel.Id + " " + exception.Message);
                 isClose = true;
             }
+            context.Channel.CloseAsync();
+        }
+
+        //socket close
+        public override void ChannelInactive(IChannelHandlerContext context)
+        {
+            LogHelper.DebugRed("one client close ChannelInactive " + context.Channel.Id);
         }
     }
 }
