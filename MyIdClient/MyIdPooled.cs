@@ -38,6 +38,7 @@ namespace MyIdClient
                 {
                     IChannelPipeline pip = channel.Pipeline;
                     pip.AddLast(echoHandler);
+					
                 }));
 
         }
